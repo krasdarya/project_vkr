@@ -1,0 +1,92 @@
+{% extends "meteo_app/base.html" %}
+<!-- Шаблон для отображения данных с ветряного модуля -->
+{% block content %}
+    <div class="container mt-2">
+        <div class="row">
+            <h1 id="wind-data" class="display-4 fw-normal header-text text-dan-title text-center my-5" onmouseover="windOver()" onmouseout="windOut()">Данные с ветряного модуля</h1>
+            {% if user.is_authenticated %}
+            <p>
+              <a class="btn btn-outline-dark btn-out me-2" href="{% url 'download-wind-data' %}" role="button">Скачать .csv</a>
+              <a class="btn btn-outline-dark btn-out me-2" href="{% url 'download-wind-data-xlsx' %}" role="button">Скачать .xlsx</a>
+              <a class="btn btn-outline-dark btn-out me-2" href="{% url 'wind-data-graph' %}" role="button">График</a>
+            </p>
+            <div class="col-6">
+              {% if message %}
+                <div class="alert alert-warning" role="alert">
+                    {{ message }}
+                </div>
+              {% endif %}
+              <form class="row g-3" action="{% url 'wind-data' %}" method="get">
+                <div class="col-auto">
+                  <input type="text" class="form-control input-text" placeholder="Дата с:"name="date_from">
+                </div>
+                <div class="col-auto">
+                  <input type="text" class="form-control input-text" placeholder="Дата по:" name="date_to" aria-describedby="dateInlineHelp">
+                </div>
+                <div class="col-auto">
+                  <button type="submit" class="btn btn-outline-secondary btn-in mb-3">Искать</button>
+                </div>
+                <div id="dateInlineHelp" class="pb-3 pt-3 form-text text-help">Введите дату в формате "ГГГГ-ММ-ДД". Для поиска по времени введите дату и время в формате "ГГГГ-ММ-ДД ЧЧ:ММ"</div>
+              </form>
+            {% endif %}
+              <br>
+                <nav aria-label="Page navigation example">
+                     <ul class="pagination">
+                            {% if page_obj.has_previous %}
+                                <li class="page_item"><a class="page-link text-help" href="?page=1">&laquo; first</a></li>
+                                <li class="page_item"><a class="page-link text-help" href="?page={{ page_obj.previous_page_number }}">previous</a></li>
+                            {% endif %}
+                            <li class="page_item"><a class="page-link header-text" style="color:black">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</a></li>
+                            {% if page_obj.has_next %}
+                                <li class="page_item"> <a class="page-link text-help" href="?page={{ page_obj.next_page_number }}">next</a> </li>
+                                <li class="page_item"> <a class="page-link text-help" href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a></li>
+                            {% endif %}
+                     </ul>
+                </nav>
+              <table class="table table-hover table-wind">
+                  <tbody>
+                    <tr>
+                      <th scope="col">id</th>
+                      <th scope="col">date</th>
+                      <th scope="col">WS1AVG</th>
+                      <th scope="col">WD1AVG</th>
+                      <th scope="col">WS1MIN2</th>
+                      <th scope="col">WS1AVG2</th>
+                      <th scope="col">WS1MAX2</th>
+                      <th scope="col">WD1MIN2</th>
+                      <th scope="col">WD1AVG2</th>
+                      <th scope="col">WD1MAX2</th>
+                      <th scope="col">WS1MIN10</th>
+                      <th scope="col">WS1AVG10</th>
+                      <th scope="col">WS1MAX10</th>
+                      <th scope="col">WD1MIN10</th>
+                      <th scope="col">WD1AVG10</th>
+                      <th scope="col">WD1MAX10</th>
+                    </tr>
+                  {% for data in page_obj %}
+                    <tr>
+                      <td scope="col">{{ data.id }}</td>
+                      <td scope="col">{{ data.date|date:"d.m.Y H:i:s"}}</td>
+                      <td scope="col">{{data.WS1AVG}}</td>
+                      <td scope="col">{{data.WD1AVG}}</td>
+                      <td scope="col">{{data.WS1MIN2}}</td>
+                      <td scope="col">{{data.WS1AVG2}}</td>
+                      <td scope="col">{{data.WS1MAX2}}</td>
+                      <td scope="col">{{data.WD1MIN2}}</td>
+                      <td scope="col">{{data.WD1AVG2}}</td>
+                      <td scope="col">{{data.WD1MAX2}}</td>
+                      <td scope="col">{{data.WS1MIN10}}</td>
+                      <td scope="col">{{data.WS1AVG10}}</td>
+                      <td scope="col">{{data.WS1MAX10}}</td>
+                      <td scope="col">{{data.WD1MIN10}}</td>
+                      <td scope="col">{{data.WD1AVG10}}</td>
+                      <td scope="col">{{data.WD1MAX10}}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+              </table>
+            </div>
+        </div>
+    </div>
+    
+{% endblock %}

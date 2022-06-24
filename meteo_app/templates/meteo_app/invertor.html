@@ -1,0 +1,88 @@
+{% extends "meteo_app/base.html" %}
+<!-- Шаблон для отображения данных с инвертора -->
+{% block content %}
+    <div class="position-relative container mt-2 w-100" style="width: 100%;">
+        <div class="row">
+            <h1 id="invertor-data" class="display-4 fw-normal header-text text-dan-title text-center my-5" onmouseover="invertorOver()" onmouseout="invertorOut()">Данные с инвертора</h1>
+            {% if user.is_authenticated %}
+              <p>
+                  <a class="btn btn-outline-dark btn-out me-2" href="{% url 'download-invertor-data' %}" role="button">Скачать .csv</a>
+                  <a class="btn btn-outline-dark btn-out me-2" href="{% url 'download-invertor-data-xlsx' %}" role="button">Скачать .xlsx</a>
+                  <a class="btn btn-outline-dark btn-out me-2" href="{% url 'invertor-data-graph' %}" role="button">График</a>
+              </p>
+              <div class="col-6">
+                {% if message %}
+                  <div class="alert alert-warning" role="alert">
+                      {{ message }}
+                  </div>
+                {% endif %}
+              <form class="row g-3" action="{% url 'invertor-data' %}" method="get">
+                <div class="col-auto">
+                  <input type="text" class="form-control input-text" placeholder="Дата с:"name="date_from">
+                </div>
+                <div class="col-auto">
+                  <input type="text" class="form-control input-text" placeholder="Дата по:" name="date_to" aria-describedby="dateInlineHelp">
+                </div>
+                <div class="col-auto">
+                  <button type="submit" class="btn btn-outline-secondary btn-in mb-3">Искать</button>
+                </div>
+                <div id="dateInlineHelp" class="pb-3 pt-3 form-text text-help">Введите дату в формате "ГГГГ-ММ-ДД". Для поиска по времени введите дату и время в формате "ГГГГ-ММ-ДД ЧЧ:ММ"</div>
+              </form>
+            {% endif %}
+              <br>
+                  <nav aria-label="Page navigation example">
+                     <ul class="pagination">
+                            {% if page_obj.has_previous %}
+                                <li class="page_item"><a class="page-link text-help" href="?page=1">&laquo; first</a></li>
+                                <li class="page_item"><a class="page-link text-help" href="?page={{ page_obj.previous_page_number }}">previous</a></li>
+                            {% endif %}
+                            <li class="page_item"><a class="page-link header-text" style="color:black">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</a></li>
+                            {% if page_obj.has_next %}
+                                <li class="page_item"> <a class="page-link text-help" href="?page={{ page_obj.next_page_number }}">next</a> </li>
+                                <li class="page_item"> <a class="page-link text-help" href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a></li>
+                            {% endif %}
+                    </ul>
+                  </nav>
+                <table class="table table-hover table-invertor">
+                    <tbody>
+                      <tr>
+                        <th scope="col">id</th>
+                        <th scope="col">date</th>
+                        <th scope="col">pv1_input_power(Вт)</th>
+                        <th scope="col">pv1_voltage(В)</th>
+                        <th scope="col">pv1_current(А)</th>
+                        <th scope="col">pv2_input_power(Вт)</th>
+                        <th scope="col">pv2_voltage(В)</th>
+                        <th scope="col">pv2_current(А)</th>
+                        <th scope="col">grid_voltage(В)</th>
+                        <th scope="col">grid_current(А)</th>
+                        <th scope="col">grid_frequency(Гц)</th>
+                        <th scope="col">output_power(Вт)</th>
+                        <th scope="col">energy_today(кВт*ч)</th>
+                        <th scope="col">energy_total(кВт*ч)</th>
+                      </tr>
+                    {% for data in page_obj %}
+                      <tr>
+                        <td scope="col">{{ data.id }}</td>
+                        <td scope="col">{{ data.date|date:"d.m.Y H:i:s" }}</td>
+                        <td scope="col">{{ data.pv1_input_power }}</td>
+                        <td scope="col">{{ data.pv1_voltage }}</td>
+                        <td scope="col">{{ data.pv1_current }}</td>
+                        <td scope="col">{{ data.pv2_input_power }}</td>
+                        <td scope="col">{{ data.pv2_voltage }}</td>
+                        <td scope="col">{{ data.pv2_current }}</td>
+                        <td scope="col">{{ data.grid_voltage }}</td>
+                        <td scope="col">{{ data.grid_current }}</td>
+                        <td scope="col">{{ data.grid_frequency }}</td>
+                        <td scope="col">{{ data.output_power }}</td>
+                        <td scope="col">{{ data.energy_today }}</td>
+                        <td scope="col">{{ data.energy_total }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+{% endblock %}
